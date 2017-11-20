@@ -1,0 +1,20 @@
+{
+	"$jason": {
+		"head": {
+			"title": "Next Title",
+			"description": "Next description"
+		},
+		body: {
+			header: {
+				title: {
+					type: "label",
+					text: "Title",
+					style: {
+						size: "20px"
+					}
+				}
+			},
+			sections: []
+		}
+	}
+}

@@ -1,0 +1,301 @@
+{
+	"$jason": {
+	  "head": {
+	    "title": "Test Title",
+	    "description": "Test description",
+	    "icon": "test.png",
+	    "offline": "test offline",
+	    "actions": {
+	      "$load": {
+	        "type": "$util.console",
+	        "options": "load"
+	      },
+	      "$foreground": {
+	        "type": "$util.console",
+	        "options": "foreground"
+	      },
+	      "$show": {
+	        "type": "$util.toast",
+	        "options": {
+	          "type": "error",
+	          "text": "Loaded"
+	        }
+	      }
+	    },
+	    "templates": {
+	      "body": {
+	        "style": {
+	          "background": "yellow",
+	          "border": "1px solid #000000"
+	        },
+	        "header": {
+	          "title": {
+	            "type": "label",
+	            "text": "Title",
+	            "style": {
+	              "size": "20px"
+	            }
+	          },
+	          "menu": {
+	            "text": "Test"
+	          },
+	          "style": {
+	            "color": "blue",
+	            "background": "green"
+	          }
+	        },
+	        "sections": [
+	          {
+	            "header": {
+	              "type": "label",
+	              "text": "Section One"
+	            },
+	            "items": [
+	              {
+	                "type": "label",
+	                "text": "Login",
+	                "action": {
+	                  "type": "$util.alert",
+	                  "options": {
+	                    "title": "Login",
+	                    "description": "You know how to press text!",
+	                    "form": [
+	                      {
+	                        "name": "email",
+	                        "type": "text",
+	                        "placeholder": "email"
+	                      },
+	                      {
+	                        "name": "password",
+	                        "type": "secure",
+	                        "placeholder": "password"
+	                      }
+	                    ]
+	                  }
+	                }
+	              },
+	              {
+	                "type": "button",
+	                "text": "$util.datepicker",
+	                "action": {
+	                  "type": "$util.datepicker",
+	                  "options": {
+	                    "title": "Pick A Date",
+	                    "description": "You know how to press a button!"
+	                  }
+	                }
+	              },
+	              {
+	              	"type": "button",
+	              	"text": "$geo.get",
+	              	"action": {
+	              		"type": "$geo.get",
+	              		"success": {
+	              			"type": "$util.alert",
+	              			"options": {
+	              				"title": "Coordinates",
+	              				"description": "{{$jason.coord}}"
+	              			}
+	              		}
+	              	}
+	              },
+	              {
+	                "type": "button",
+	                "text": "Pick A Choice",
+	                "action": {
+	                  "type": "$util.picker",
+	                  "options": {
+	                    "title": "Pick A Choice",
+	                    "description": "You know how to press a button!",
+	                    "items": [
+	                      {
+	                        "text": "Trigger $util.banner",
+	                        "action": {
+	                          "type": "$util.banner",
+	                          "options": {
+	                            "title": "Success",
+	                            "description": "This is a banner"
+	                          }
+	                        }
+	                      },
+	                      {
+	                        "text": "Trigger $util.toast",
+	                        "action": {
+	                          "type": "$util.toast",
+	                          "options": {
+	                            "text": "This is a toast"
+	                          }
+	                        }
+	                      },
+	                      {
+	                        "text": "Trigger $util.alert",
+	                        "action": {
+	                          "type": "$util.alert",
+	                          "options": {
+	                            "title": "Alert",
+	                            "description": "This is an alert triggered by $util.picker"
+	                          }
+	                        }
+	                      },
+	                      {
+	                        "text": "Trigger $set",
+	                        "action": {
+	                          "type": "$set",
+	                          "options": {
+	                            "message": "Hello Again"
+	                          },
+	                          "success": {
+	                          	"type": "$render"
+	                          }
+	                        }
+	                      },
+	                      {
+	                        "text": "Trigger $back",
+	                        "action": {
+	                          "type": "$back"
+	                        }
+	                      },
+	                      {
+	                        "text": "Trigger $close",
+	                        "action": {
+	                          "type": "$close"
+	                        }
+	                      }
+	                    ]
+	                  }
+	                }
+	              },
+	              {
+	                "type": "button",
+	                "text": "HREF",
+	                "action": {
+	                  "type": "$href",
+	                  "options": {
+	                    "url": "test.html",
+	                    "view": "web"
+	                  }
+	                }
+	              },
+	              {
+	                "type": "button",
+	                "text": "View",
+	                "href": {
+	                  "url": "next.json"
+	                }
+	              },
+	              {
+	                "type": "textfield",
+	                "value": "Item 3"
+	              },
+	              {
+	                "type": "textfield",
+	                "value": 10,
+	                "keyboard": "number"
+	              },
+	              {
+	                "type": "html",
+	                "text": "<html><head></head><body>{{message}} One Plus One = {{1+1}}</body></html>"
+	              },
+	              {
+	                "type": "label",
+	                "text": [
+	                  {
+	                    "{{#if false}}": "Nothing"
+	                  },
+	                  {
+	                    "{{#elseif true}}": "Simon"
+	                  }
+	                ]
+	              },
+	              {
+	                "type": "label",
+	                "text": "Trigger $reload",
+	                "action": {
+	                  "type": "$reload"
+	                }
+	              }
+	            ]
+	          },
+	          {
+	            "type": "horizontal",
+	            "header": {
+	              "type": "label",
+	              "text": "Section Two"
+	            },
+	            "items": {
+	              "{{#each people}}": {
+	                "type": "label",
+	                "text": "{{name}}"
+	              }
+	            }
+	          }
+	        ]
+	      }   
+	    },
+	    "data": {
+	      "message": "Hello World",
+	      "people": [
+	        {
+	          "name": "Mary"
+	        },
+	        {
+	          "name": "Joe"
+	        }
+	      ]
+	    }
+	  },
+	  "body": {
+	  "footer": {
+	          "input": {
+	            "textfield": {
+	              "name": "message",
+	              "placeholder": "Enter message"
+	            }
+	          },
+	          "tabs": {
+	            "items": [
+	              {
+	                "text": "$snapshot",
+	                "action": {
+	                  "type": "$snapshot"
+	                }
+	              },
+	              {
+	                "text": "$media.camera",
+	                "action": {
+	                  "type": "$media.camera"
+	                }
+	              },
+	              {
+	                "text": "$audio.play",
+	                "action": {
+	                  "type": "$audio.play",
+	                  "options": {
+	                    "url": "http://www.sample-videos.com/audio/mp3/wave.mp3"
+	                  }
+	                }
+	              },
+	              {
+	                "text": "$audio.pause",
+	                "action": {
+	                  "type": "$audio.pause",
+	                  "options": {
+	                    "url": "http://www.sample-videos.com/audio/mp3/wave.mp3"
+	                  }
+	                }
+	              },
+	              {
+	                "text": "$audio.record",
+	                "action": {
+	                  "type": "$audio.record",
+	                  "options": {
+	                    "url": "http://www.sample-videos.com/audio/mp3/wave.mp3"
+	                  }
+	                }
+	              }
+	            ]
+	          }
+	        }
+	  }
+	}
+}
