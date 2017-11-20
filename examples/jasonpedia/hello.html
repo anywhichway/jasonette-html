@@ -1,0 +1,30 @@
+<html>
+<head>
+<style>
+div {
+    padding: 3px
+}
+.notification_error {
+	background-color: red;
+}
+.notification_warning {
+	background-color: yellow;
+}
+.notification_info {
+	background-color: blue;
+}
+</style>
+<script src="../../index.js"></script>
+<script>
+function load() {
+	fetch("https://raw.githubusercontent.com/Jasonette/Jasonpedia/gh-pages/hello.json")
+		.then(result => result.text())
+		.then(text => new Function("return " + text)())
+		.then(json => Jasonette.jasonify(json,document.getElementById("app")));
+}
+</script>
+</head>
+<body onload="load()">
+<div id="app" style="max-width:760px"></div>
+</body>
+</html>
