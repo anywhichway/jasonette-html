@@ -18,6 +18,7 @@ Known issues:
 1) $toast and $banner do not locate on screen in right place
 2) Embedded web rendering does not work well
 3) Aesthetics are sub-par
+4) Currently works only in Chrome browser
 
 
 
