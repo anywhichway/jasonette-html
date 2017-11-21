@@ -138,8 +138,8 @@
 		async call(config) {
 			if(config.trigger) {
 				const fname = config.trigger;
-				if(this.head.actions[fname]) {
-					return this.call({name:fname,options:config.options});
+				if($jason.head.actions[fname]) {
+					return this.call({name:fname,type:$jason.head.actions[fname].type,options:$jason.head.actions[fname].options});
 				}
 			} else {
 				const parts = config.type.split(".");
@@ -235,7 +235,8 @@
 						rejector;
 					const promise = new Promise((resolve,reject) => { resolver = resolve; rejector = reject; }),
 						dialog = document.createElement("dialog");
-					let html = `<h3>${options.title}</h3>${options.description}`;
+					let html = (options.title ? `<h3>${options.title}</h3>` : "");
+					html += (options.description ? `${options.description}` : "");
 					if(options.form) {
 						html += `<form id="form"><table>`;
 						for(let field of options.form) {
@@ -280,7 +281,7 @@
 				picker: function(options) {
 					const dialog = document.createElement("dialog");
 					options = Object.assign({},options);
-					dialog.innerHTML = `<h3 style="text-align:center;width:100%">${options.title}</h3>`;
+					dialog.innerHTML = (options.title ? `<h3 style="text-align:center;width:100%">${options.title}</h3>` : "");
 					const table = document.createElement("table");
 					for(let item of options.items) {
 						const tr = document.createElement("tr"),
@@ -342,8 +343,8 @@
 		async $render(options={},target) {
 			const data = options.data || ($jason.head && $jason.head.data ? $jason.head.data : $jason),
 				template = (options.template ? options.template : ($jason.head.templates && $jason.head.templates.body ? $jason.head.templates.body : $jason.body));
-			this.footer || (this.footer = $jason.body.footer);
-			template.footer = this.footer;
+			this.footer || !$jason.body || !$jason.body.footer || (this.footer = $jason.body.footer);
+			!this.footer || (template.footer = this.footer);
 			this.options = options;
 			/*if($jason.head.actions && $jason.head.actions.$foreground) {
 				const focus = () => {
@@ -367,7 +368,9 @@
 			el.style.flexDirection="row";   /* align children vertically (column format) */
 			el.style.justifyContent="center";  /* center children vertically */
 			el.style.alignItems="center";
+			el.width = "100%";
 			const screen = this.screen = document.createElement("div");
+			screen.style.flex = 1;
 			this.renderHeader($jason.body.header,screen);
 			this.sections = this.renderSections($jason.body.sections,screen);
 			this.renderFooter($jason.body.footer,screen);
@@ -729,7 +732,7 @@
 				for(let key in template) {
 					let value = template[key];
 					if(Array.isArray(value)) {
-						value = this.resolve(value,data);
+						value = this.resolve(value,data,jason);
 						typeof(value)==="undefined" || (result[key] = value);
 					} else if (key==="success") {
 						result[key] = value;
@@ -743,19 +746,26 @@
 								typeof(childvalue)==="undefined" || (result[key][childkey] = childvalue);
 							}
 						}
-					} else {
+					} else if(typeof(value)!=="undefined"){
 						result[key] = this.resolve(value,data,jason);
 					}
 				}
 			} else {
 				const scope = Object.assign({},data);
 				scope.$jason = jason;
-				result = render(template,scope,(template,data) => new Function("data","with(data) { return " + template + "}")(data));
+				result = render(template,scope,(template,data) => {
+					const f = (new Function("template","return ((template.indexOf('return')>=0 ? new Function('with(this) {' + template +'; }') : new Function('with (this) { return ' + template +'; }')));")(template)),
+						value = f.call(data);
+					if(value && typeof(value)==="object") {
+						return JSON.stringify(value)
+					}
+					return value;
+				});
 			}
 			return result;
 		}
 		resolveForEach(foreach,template,data,jason) {
-			let scopekey = foreach.split(" ")[1];
+			let scopekey = foreach.substring(foreach.indexOf(" ")+1);
 			scopekey = scopekey.substring(0,scopekey.lastIndexOf("}")-1);
 			const items = data[scopekey],
 				results = [];
@@ -771,11 +781,17 @@
 		resolveConditional(conditional,data,jason) {
 			for(let item of conditional) {
 				let key = Object.keys(item)[0],
-					condition = key.split(" ")[1];
-				condition = condition.substring(0,condition.lastIndexOf("}")-1);
-				if(new Function("data","with (data) { return " + condition + "}")(data)) {
-					return this.resolve(item[key],data,jason);
+					template = item[key];
+				if(key==="{{#else}}") {
+					return this.resolve(template,data,jason);
+				} else {
+					let condition = key.substring(key.indexOf(" ")+1);
+						condition = condition.substring(0,condition.lastIndexOf("}")-1);
+					if(new Function("with (this) { return " + condition + "}").call(data)) {
+						return this.resolve(template,data,jason);
+					}
 				}
+					
 			}
 		}
 		renderHeader(header,target) {
@@ -810,6 +826,7 @@
 					}
 				}
 				this.renderMenu(header.menu,el);
+				this.renderClass(header.class,el);
 				this.renderStyle(header.style,el);
 			target.appendChild(el);
 			}
@@ -818,6 +835,7 @@
 			if(menu) {
 				const el = document.createElement("span");
 				el.style.float = "right";
+				this.renderClass(menu.class,el);
 				this.renderStyle(menu.style,el);
 				const item = Object.assign({},menu);
 				if(menu.text) {
@@ -880,8 +898,19 @@
 					this.renderItem(tab,span);
 					el.appendChild(span);
 				}
+				this.renderClass(tabs.class,el);
 				this.renderStyle(tabs.style,el);
 				target.appendChild(el);
+			}
+		}
+		renderClass(cls,el) {
+			if(cls) {
+				const names = cls.split(" ");
+				for(let name of names) {
+					if($jason.head.styles && $jason.head.styles[name]) {
+						this.renderStyle($jason.head.styles[name],el);
+					}
+				}
 			}
 		}
 		renderStyle(style,el) {
@@ -969,6 +998,9 @@
 					el = document.createElement("textarea");
 					!item.value || el.setAttribute("value",item.value);
 					el.setAttribute("type",item.keyboard||"text");
+				} else if(item.type==="horizontal"){
+					el = document.createElement("span");
+					this.renderComponents(item.components,el,item.type);
 				} else {
 					el = document.createElement("div");
 					this.renderComponents(item.components,el,item.type);
@@ -982,10 +1014,9 @@
 						this.call(item.action);
 					}
 				}
+				this.renderClass(item.class,el);
 				this.renderStyle(item.style,el);
-				if(el) {
-					target.appendChild(el);
-				}
+				target.appendChild(el);
 			}
 		}
 		renderComponents(components,target,orientation) {

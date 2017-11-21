@@ -26,6 +26,8 @@ See `examples/comprehensive.html` for a relatively complete example. The `compre
 
 # Release History
 
+2017-11-21 v0.0.3 Alpha Ehanced mustache processing to support `this` references. Ajusted flexbox rendering.
+
 2017-11-20 v0.0.2 Alpha Fixed https://github.com/Jasonette/Jasonette/issues/17 for hello.json
 
 2017-11-20 v0.0.1 Alpha

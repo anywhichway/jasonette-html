@@ -17,7 +17,7 @@ div {
 <script src="../../index.js"></script>
 <script>
 function load() {
-	fetch("https://raw.githubusercontent.com/Jasonette/Jasonpedia/gh-pages/hello.json")
+	fetch("hello.json") //https://raw.githubusercontent.com/Jasonette/Jasonpedia/gh-pages/hello.json
 		.then(result => result.text())
 		.then(text => new Function("return " + text)())
 		.then(json => Jasonette.jasonify(json,document.getElementById("app")));
